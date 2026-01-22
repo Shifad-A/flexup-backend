@@ -26,7 +26,7 @@ const userSchema=mongoose.Schema({
     role:{
         type:String,
         required:false,
-        default:"FlexUp user"
+        default:"flexUp user"
     }
 })
 module.exports=mongoose.model("User",userSchema)
