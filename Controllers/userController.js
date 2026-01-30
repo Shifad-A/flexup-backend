@@ -69,3 +69,18 @@ exports.googleLogin= async(req,res)=>{
         
     }
 }
+exports.getUser=async(req,res)=>{
+    const email=req.payload
+    console.log(email);
+
+    try {
+        const activeUser=await User.find({email})
+        res.status(200).json(activeUser)
+        
+        
+    } catch (err) {
+        res.status(500).json(err)
+        
+    }
+    
+}
