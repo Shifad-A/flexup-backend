@@ -9,9 +9,9 @@ const jwtMiddleware = (req, res, next) => {
     const jwtVerification = jwt.verify(token, process.env.jwtkey);
     console.log(jwtVerification);
     req.payload = jwtVerification.email;
-    req.role=jwtVerification.role
+    req.id=jwtVerification.id
   } catch (err) {
-    res.status(401).json("Autorization error"+err)
+    return res.status(401).json("Autorization error"+err)
   }
   next();
 };

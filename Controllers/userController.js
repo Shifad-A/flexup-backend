@@ -26,17 +26,17 @@ exports.userLogin = async (req, res) => {
     if (existingUser) {
       if (existingUser.password == password) {
         const token = jwt.sign(
-          { email: existingUser.email, role: existingUser.role },
+          { email: existingUser.email, id: existingUser._id },
           process.env.jwtkey,
         );
         console.log(token);
 
-        res.status(200).json({ message: "Login Success", existingUser, token });
+        return res.status(200).json({ message: "Login Success", existingUser, token });
       } else {
-        res.status(401).json("Incorrect password");
+        return res.status(401).json("Incorrect password");
       }
     } else {
-      res.status(401).json("User Not Exist");
+      return res.status(401).json("User Not Exist");
     }
   } catch (err) {
     res.status(500).json("error" + err);
@@ -47,25 +47,29 @@ exports.googleLogin = async (req, res) => {
   const { username, email, password, profile } = req.body;
 
   try {
+    console.log('inside try cathch');
+    
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       //genarate token
       const token = jwt.sign(
-        { email: existingUser.email, role: existingUser.role },
+        { email: existingUser.email, id: existingUser._id },
         process.env.jwtkey,
       );
       console.log(token);
-      res.status(200).json({ message: "Login Success", existingUser, token });
+      return res
+        .status(200)
+        .json({ message: "Login Success", existingUser, token });
     } else {
       const newUser = new User({ username, email, password, profile });
       await newUser.save();
       //genarate token
       const token = jwt.sign(
-        { usermail: newUser.email, role: newUser.role },
+        { usermail: newUser.email, id: newUser._id },
         process.env.jwtkey,
       );
       console.log(token);
-      res
+      return res
         .status(200)
         .json({ message: "User Added successfully", newUser, token });
     }
@@ -105,23 +109,20 @@ exports.updateUser = async (req, res) => {
 };
 
 exports.getUsers = async (req, res) => {
-  const role = req.role;
-  console.log(role);
 
   try {
-    const users = await User.find({ role });
-    res.status(200).json(users);
+    const users = await User.find({ role:"flexUp user" });
+    return res.status(200).json(users);
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 };
 
 exports.getTrainers = async (req, res) => {
   try {
     const trainers = await User.find({ role: "flexUp trainer" });
-    res.status(200).json(trainers);
+    return res.status(200).json(trainers);
   } catch (err) {
-    res.status(500).json(err);
+    return res.status(500).json(err);
   }
 };
-
