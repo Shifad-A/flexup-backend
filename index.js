@@ -10,6 +10,7 @@ const flexupServer=express()
 flexupServer.use(cors())
 flexupServer.use(express.json())
 flexupServer.use(route)
+flexupServer.use('/uploads',express.static('./uploads'))
 
 
 const PORT= 3000 || process.env.PORT
