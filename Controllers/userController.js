@@ -94,7 +94,8 @@ exports.updateUser = async (req, res) => {
   const email = req.payload;
   console.log(req.file);
 
-  const uploadedProfile = req.file ? req.file.filename : profile;
+  const uploadedProfile = req.file
+        ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`:profile;
   try {
     const updateUser = await User.findOneAndUpdate(
       { email },
@@ -110,17 +111,40 @@ exports.updateUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
 
+  console.log(req.query);
+   const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+  const filter = { _id: { $ne: req.id },role:{ $ne: "flexUp trainer" } };
+
   try {
-    const users = await User.find({ role:"flexUp user" });
-    return res.status(200).json(users);
+    const users = await User.find(filter)
+  .skip(skip)
+  .limit(limit);
+  
+   const totalUsers = await User.countDocuments(filter);
+   console.log(totalUsers);
+   
+    return res.status(200).json({
+      users,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      totalUsers
+    });
   } catch (err) {
     return res.status(500).json(err);
   }
 };
 
 exports.getTrainers = async (req, res) => {
+  const searchKey=req.query.search
   try {
-    const trainers = await User.find({ role: "flexUp trainer" });
+    const trainers = await User.find({
+      $and:[
+        {role:"flexUp trainer"},
+        {username:{$regex:searchKey,$options:"i"}}
+      ]
+    });
     return res.status(200).json(trainers);
   } catch (err) {
     return res.status(500).json(err);

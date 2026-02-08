@@ -22,9 +22,9 @@ route.put('/api/trainer/request-accept',jwtMiddleware,trainerRequestController.a
 route.put('/api/trainer/request-reject',jwtMiddleware,trainerRequestController.declineTrainerRequest)
 route.get('/api/get-myClients',jwtMiddleware,trainerRequestController.viewMyClients)
 route.get('/api/get-dashStatus',jwtMiddleware,trainerRequestController.getTrainerDashboardStatus)
-
-
-
+route.post('/api/post',jwtMiddleware,multerConfig.single('image'),postController.createPost)
+route.get('/api/get/post',postController.getAllPosts)
+route.put('/api/likes/:id',jwtMiddleware,postController.likeDislikePost)
 
 
 module.exports=route
